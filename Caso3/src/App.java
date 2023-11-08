@@ -6,21 +6,26 @@ public class App {
     public static void main(String[] args) {
         
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Ingrese el algoritmo que va a usar:");
+        System.out.println("Ingrese el algoritmo que va a usar: (SHA-256/SHA-512))");
         String algoritmo = scanner.nextLine();
-        System.out.println("Inserte la cadena que va a utilizar: ");
+        System.out.println("Inserte la cadena que va a utilizar:");
         String cadena = scanner.nextLine();
-        System.out.println("Inserte los 0 deseados: ");
+        System.out.println("Inserte los 0 deseados:");
         int cerosDeseados = scanner.nextInt();
-        System.out.println("Inserte el numero de hilos a ejecutar: ");
+        System.out.println("Inserte el numero de hilos a ejecutar: (1/2)");
         int numThreads = scanner.nextInt();
 
         MineTask[] tasks = new MineTask[numThreads];
-        int searchSpace = 1 << 28; // Espacio de búsqueda dividido en partes iguales
 
-        for (int i = 0; i < numThreads; i++) {
-            tasks[i] = new MineTask(algoritmo, cadena, cerosDeseados, searchSpace * i, searchSpace * (i + 1));
-            new Thread(tasks[i]).start();
+        if (numThreads==1) {
+            tasks[0] = new MineTask(1, algoritmo, cadena, cerosDeseados, true, true);
+            new Thread(tasks[0]).start();
+        } else {
+            tasks[0] = new MineTask(1, algoritmo, cadena, cerosDeseados, true, false);
+            tasks[1] = new MineTask(2, algoritmo, cadena, cerosDeseados, false, true);
+            for (int i = 0; i < numThreads; i++) {
+                new Thread(tasks[i]).start();
+            }
         }
         scanner.close();
         
