@@ -11,6 +11,8 @@ public class MineTask implements Runnable {
     private String end;
     private static boolean found = false;
     private Monitor monitor;
+    private MessageDigest md;
+    private int i;
 
     public MineTask(int id, String algorithm, String data, int zeros, boolean firstHalf, boolean secondHalf, Monitor monitor) {
         this.id = id;
@@ -18,9 +20,15 @@ public class MineTask implements Runnable {
         this.data = data;
         this.zeros = zeros;
         this.monitor = monitor;
+        try {
+            this.md = MessageDigest.getInstance(algorithm);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
 
         if (firstHalf) {
             this.start = "a";
+            this.i = 0;
             if (secondHalf) {
                 this.end = "zzzzzzz";
             } else {
@@ -29,6 +37,7 @@ public class MineTask implements Runnable {
         } else {
             this.start = "naaaaaa";
             this.end = "zzzzzzz";
+            this.i = 6;
         }
     }
 
@@ -40,13 +49,18 @@ public class MineTask implements Runnable {
         long startTime = System.currentTimeMillis();
 
         while (monitor.getFound() == false) {
+
+            // print every 5 seconds
+            if (System.currentTimeMillis() % 5000 == 0) {
+                System.out.println("Thread " + this.id + ": " + v);
+            }
             
             input = data + v;
-            String hash = calculateHash(input, algorithm);
+            String hash = calculateHash(input);
             if (startsWithZeros(hash, zeros)) {
                 long endTime = System.currentTimeMillis();
                 // print result
-                monitor.printResult(id, startTime, endTime, hash, input, v, zeros);
+                monitor.printResult(id, startTime, endTime, hash, data, v, zeros);
                 return;
             } 
             else if (v.equals(end)) {
@@ -61,7 +75,7 @@ public class MineTask implements Runnable {
 
     private String nextString(String v) {
         char[] charArray = v.toCharArray();
-        int i = charArray.length - 1;
+        
         // Incrementa el último carácter o cambia 'z' por 'a' y propaga si es necesario
         while (i >= 0) {
             if (charArray[i] == 'z') {
@@ -69,35 +83,31 @@ public class MineTask implements Runnable {
                 i--;
             } else {
                 charArray[i]++;
+                i = v.length() - 1;
                 break;
             }
         }
         // Si todos los caracteres eran 'z', agrega un 'a' al principio
         if (i == -1) {
+            i = v.length() - 1;
             return "a" + new String(charArray);
         } else {
             return new String(charArray);
         }
     }
     
-    private String calculateHash(String input, String algorithm) {
-        try {
-            MessageDigest md = MessageDigest.getInstance(algorithm);
-            byte[] hashBytes = md.digest(input.getBytes());
-            StringBuilder sb = new StringBuilder();
-            for (byte b : hashBytes) {
-                sb.append(String.format("%02x", b));
-            }
-            return sb.toString();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return "";
+    private String calculateHash(String input) {
+        byte[] hashBytes = md.digest(input.getBytes());
+        StringBuilder sb = new StringBuilder();
+        for (byte b : hashBytes) {
+            sb.append(String.format("%02x", b));
         }
+        return sb.toString();
     }
 
     private boolean startsWithZeros(String hash, int zeros) {
-        for (int i = 0; i < zeros; i++) {
-            if (hash.charAt(i) != '0') {
+        for (int x = 0; x < zeros; x++) {
+            if (hash.charAt(x) != '0') {
                 return false;
             }
         }
