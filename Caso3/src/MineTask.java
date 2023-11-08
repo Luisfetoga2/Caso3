@@ -10,12 +10,14 @@ public class MineTask implements Runnable {
     private String start;
     private String end;
     private static boolean found = false;
+    private Monitor monitor;
 
-    public MineTask(int id, String algorithm, String data, int zeros, boolean firstHalf, boolean secondHalf) {
+    public MineTask(int id, String algorithm, String data, int zeros, boolean firstHalf, boolean secondHalf, Monitor monitor) {
         this.id = id;
         this.algorithm = algorithm;
         this.data = data;
         this.zeros = zeros;
+        this.monitor = monitor;
 
         if (firstHalf) {
             this.start = "a";
@@ -35,34 +37,26 @@ public class MineTask implements Runnable {
         String v = start;
         String input;
 
-        Boolean completed = false;
-
         long startTime = System.currentTimeMillis();
 
-        while (!completed) {
-
+        while (monitor.getFound() == false) {
+            
             input = data + v;
             String hash = calculateHash(input, algorithm);
             if (startsWithZeros(hash, zeros)) {
-                completed = true;
+                long endTime = System.currentTimeMillis();
+                // print result
+                monitor.printResult(id, startTime, endTime, hash, input, v, zeros);
+                return;
             } 
             else if (v.equals(end)) {
-                completed = true;
+                System.out.println("Thread " + this.id + ": no se encontró resultado en su rango de busqueda.");
+                return;
             } else {
                 v = nextString(v);
             }
         }
-
-        if (!v.equals(end)) {
-            long endTime = System.currentTimeMillis();
-            System.out.println("Thread: " + this.id + "\n" +
-                               "Time: " + (endTime - startTime) + "ms" + "\n" +
-                               "Hash: " + calculateHash(data + v, algorithm) + "\n" +
-                               "Input: " + data + v+ "\n" +
-                               "V: " + v);
-        } else {
-            System.out.println("Thread " + this.id + ": no se encontró resultado.");
-        }
+        System.out.println("Thread " + this.id + ": detenido.");
     }
 
     private String nextString(String v) {

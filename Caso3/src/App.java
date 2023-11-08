@@ -16,13 +16,14 @@ public class App {
         int numThreads = scanner.nextInt();
 
         MineTask[] tasks = new MineTask[numThreads];
+        Monitor monitor = new Monitor();
 
         if (numThreads==1) {
-            tasks[0] = new MineTask(1, algoritmo, cadena, cerosDeseados, true, true);
+            tasks[0] = new MineTask(1, algoritmo, cadena, cerosDeseados, true, true, monitor);
             new Thread(tasks[0]).start();
         } else {
-            tasks[0] = new MineTask(1, algoritmo, cadena, cerosDeseados, true, false);
-            tasks[1] = new MineTask(2, algoritmo, cadena, cerosDeseados, false, true);
+            tasks[0] = new MineTask(1, algoritmo, cadena, cerosDeseados, true, false, monitor);
+            tasks[1] = new MineTask(2, algoritmo, cadena, cerosDeseados, false, true, monitor);
             for (int i = 0; i < numThreads; i++) {
                 new Thread(tasks[i]).start();
             }
