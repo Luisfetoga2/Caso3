@@ -13,6 +13,7 @@ public class MineTask implements Runnable {
     private Monitor monitor;
     private MessageDigest md;
     private int i;
+    private char[] charArray;
 
     public MineTask(int id, String algorithm, String data, int zeros, boolean firstHalf, boolean secondHalf, Monitor monitor) {
         this.id = id;
@@ -39,6 +40,7 @@ public class MineTask implements Runnable {
             this.end = "zzzzzzz";
             this.i = 6;
         }
+        this.charArray = this.start.toCharArray();
     }
 
     @Override
@@ -50,10 +52,12 @@ public class MineTask implements Runnable {
 
         while (monitor.getFound() == false) {
 
+            /*
             // print every 5 seconds
             if (System.currentTimeMillis() % 5000 == 0) {
                 System.out.println("Thread " + this.id + ": " + v);
             }
+            */
             
             input = data + v;
             String hash = calculateHash(input);
@@ -74,26 +78,29 @@ public class MineTask implements Runnable {
     }
 
     private String nextString(String v) {
-        char[] charArray = v.toCharArray();
         
         // Incrementa el último carácter o cambia 'z' por 'a' y propaga si es necesario
-        while (i >= 0) {
-            if (charArray[i] == 'z') {
-                charArray[i] = 'a';
-                i--;
-            } else {
-                charArray[i]++;
-                i = v.length() - 1;
+        while (charArray[i] == 'z') {
+            charArray[i] = 'a';
+            i--;
+            if (i == -1) {
                 break;
             }
         }
         // Si todos los caracteres eran 'z', agrega un 'a' al principio
         if (i == -1) {
-            i = v.length() - 1;
-            return "a" + new String(charArray);
+            i = v.length();
+            charArray = new char[v.length() + 1];
+            for (int x = 0; x < v.length()+1; x++) {
+                charArray[x] = 'a';
+            }
         } else {
-            return new String(charArray);
+            charArray[i]++;
+            i = v.length()-1;;
         }
+
+        return new String(charArray);
+        
     }
     
     private String calculateHash(String input) {
