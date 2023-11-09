@@ -1,5 +1,5 @@
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import java.text.SimpleDateFormat;  
+import java.util.Date;
 import java.util.Scanner;
 
 public class App {
@@ -17,6 +17,10 @@ public class App {
 
         MineTask[] tasks = new MineTask[numThreads];
         Monitor monitor = new Monitor();
+
+        SimpleDateFormat formatter = new SimpleDateFormat("HH:mm:ss");  
+        Date date = new Date();
+        System.out.println("Hora de inicio: " + formatter.format(date));
 
         if (numThreads==1) {
             tasks[0] = new MineTask(1, algoritmo, cadena, cerosDeseados, true, true, monitor);

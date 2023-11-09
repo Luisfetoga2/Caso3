@@ -4,12 +4,10 @@ import java.security.NoSuchAlgorithmException;
 public class MineTask implements Runnable {
 
     private int id;
-    private final String algorithm;
     private final String data;
     private final int zeros;
     private String start;
     private String end;
-    private static boolean found = false;
     private Monitor monitor;
     private MessageDigest md;
     private int i;
@@ -17,7 +15,6 @@ public class MineTask implements Runnable {
 
     public MineTask(int id, String algorithm, String data, int zeros, boolean firstHalf, boolean secondHalf, Monitor monitor) {
         this.id = id;
-        this.algorithm = algorithm;
         this.data = data;
         this.zeros = zeros;
         this.monitor = monitor;
@@ -134,7 +131,7 @@ public class MineTask implements Runnable {
                     return true;
                 }
             }
-            else if (a.charAt(0)=='0') {
+            else if (a.substring(0,1).equals("0")) {
                 count+=1;
                 if (count!=zeros){
                     return false;
@@ -144,7 +141,7 @@ public class MineTask implements Runnable {
             } else {
                 if (count<zeros) { 
                     return false;
-                } else {
+                } else if (count==zeros) {
                     return true;
                 }
             }
