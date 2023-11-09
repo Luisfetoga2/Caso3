@@ -117,8 +117,8 @@ public class MineTask implements Runnable {
         for (byte b : hashBytes) {
             if (b==0) {
                 count+=2;
-                if (count==zeros) {
-                    return true;
+                if (count > zeros) {
+                    return false;
                 }
             }
             else if (b>=1 && b<=15) {
@@ -129,7 +129,11 @@ public class MineTask implements Runnable {
                     return true;
                 }
             } else {
-                return false;
+                if (count!=zeros){
+                    return false;
+                } else {
+                    return true;
+                }
             }
         }
         return false; 
