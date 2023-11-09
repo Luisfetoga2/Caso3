@@ -16,7 +16,7 @@ public class MineTask implements Runnable {
     public MineTask(int id, String algorithm, String data, int zeros, boolean firstHalf, boolean secondHalf, Monitor monitor) {
         this.id = id;
         this.data = data;
-        this.zeros = zeros;
+        this.zeros = zeros/4;
         this.monitor = monitor;
         try {
             this.md = MessageDigest.getInstance(algorithm);
@@ -48,13 +48,6 @@ public class MineTask implements Runnable {
         long startTime = System.currentTimeMillis();
 
         while (monitor.getFound() == false) {
-
-            /*
-            // print every 5 seconds
-            if (System.currentTimeMillis() % 5000 == 0) {
-                System.out.println("Thread " + this.id + ": " + v);
-            }
-            */
             
             input = data + v;
             
@@ -120,18 +113,15 @@ public class MineTask implements Runnable {
         byte[] hashBytes = md.digest(input.getBytes());
         
         int count = 0;
-        //System.out.println("-");
+
         for (byte b : hashBytes) {
-            String a = String.format("%02x", b);
-            //System.out.println("a: " + a);
-            //System.out.println("count: "+ count);
-            if (a.equals("00")) {
+            if (b==0) {
                 count+=2;
                 if (count>=zeros) {
                     return true;
                 }
             }
-            else if (a.substring(0,1).equals("0")) {
+            else if (b>=1 && b<=15) {
                 count+=1;
                 if (count!=zeros){
                     return false;
@@ -148,15 +138,6 @@ public class MineTask implements Runnable {
         }
         return false; 
     }
-
-    /*private boolean startsWithZeros(String hash, int zeros) {
-        for (int x = 0; x < zeros; x++) {
-            if (hash.charAt(x) != '0') {
-                return false;
-            }
-        }
-        return true;
-    }*/
 }
 
 
