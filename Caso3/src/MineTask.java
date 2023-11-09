@@ -68,7 +68,9 @@ public class MineTask implements Runnable {
                 return;
             } 
             else if (v.equals(end)) {
-                System.out.println("Thread " + this.id + ": no se encontró resultado en su rango de busqueda.");
+                long endTime = System.currentTimeMillis();
+                System.out.println("Thread " + this.id + ": no se encontró resultado en su rango de busqueda. \n"+
+                                   "Tiempo de ejecución: " + (endTime - startTime) + "ms");
                 return;
             } else {
                 v = nextString(v);
